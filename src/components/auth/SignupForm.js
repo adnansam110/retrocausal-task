@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Link from "next/link";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import axios from "axios";
 
 export default function SignupForm() {
@@ -21,39 +21,39 @@ export default function SignupForm() {
   const [country, setCountry] = useState("");
   const [state, setState] = useState("");
   const [city, setCity] = useState("");
-
-  const [countries] = useState(["USA", "Canada", "UK"]); // Example countries
+  const [countriesList, setCountriesList] = useState([]);
+  const [statesList, setSatesList] = useState([]);
+  const [citiesList, setCitiesList] = useState([]);
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
   const router = useRouter();
 
   const handleCountryChange = (event) => {
     setCountry(event.target.value);
+    setState("");
+    setCity("");
     // Set states based on the selected country
-    if (event.target.value === "USA") {
-      setStates(["New York", "California", "Texas"]);
-    } else if (event.target.value === "Canada") {
-      setStates(["Ontario", "Quebec", "British Columbia"]);
-    } else if (event.target.value === "UK") {
-      setStates(["England", "Scotland", "Wales"]);
-    }
+    const updatedStates = statesList.filter(
+      (state) => state.country === event.target.value
+    );
+    setStates(updatedStates);
   };
 
   const handleStateChange = (event) => {
     setState(event.target.value);
+    setCity("");
     // Set cities based on the selected state
-    if (event.target.value === "New York") {
-      setCities(["New York City", "Buffalo", "Albany"]);
-    } else if (event.target.value === "California") {
-      setCities(["Los Angeles", "San Francisco", "San Diego"]);
-    } // Add more cities as needed
+    const updatedCities = citiesList.filter(
+      (city) => city.state === event.target.value
+    );
+    setCities(updatedCities);
   };
 
   const handleSignUp = async (e) => {
     e.preventDefault();
     // Implement your signup logic here
     try {
-      const res = await axios.post("api/signup", {
+      await axios.post("api/signup", {
         username,
         password,
         email,
@@ -66,6 +66,37 @@ export default function SignupForm() {
       router.push("/");
     } catch (err) {
       console.log("🚀 ~ file: page.js:60 ~ handleSignUp ~ err:", err);
+    }
+  };
+
+  useEffect(() => {
+    getCountries();
+    getCities();
+    getStates();
+  }, []);
+
+  const getCountries = async () => {
+    try {
+      const res = await axios.get("api/country");
+      setCountriesList(res.data.data);
+    } catch (error) {
+      console.log("🚀 ~ file: SignupForm.js:82 ~ getCountries ~ error:", error);
+    }
+  };
+  const getStates = async () => {
+    try {
+      const res = await axios.get("api/state");
+      setSatesList(res.data.data);
+    } catch (error) {
+      console.log("🚀 ~ file: SignupForm.js:82 ~ getCountries ~ error:", error);
+    }
+  };
+  const getCities = async () => {
+    try {
+      const res = await axios.get("api/city");
+      setCitiesList(res.data.data);
+    } catch (error) {
+      console.log("🚀 ~ file: SignupForm.js:82 ~ getCountries ~ error:", error);
     }
   };
 
@@ -111,37 +142,41 @@ export default function SignupForm() {
               onChange={handleCountryChange}
               label="Country"
             >
-              {countries.map((countryName) => (
-                <MenuItem key={countryName} value={countryName}>
-                  {countryName}
+              {countriesList.map((country) => (
+                <MenuItem key={country.name} value={country.name}>
+                  {country.name}
                 </MenuItem>
               ))}
             </Select>
           </FormControl>
-          <FormControl fullWidth variant="outlined" margin="normal">
-            <InputLabel>State</InputLabel>
-            <Select value={state} onChange={handleStateChange} label="State">
-              {states.map((stateName) => (
-                <MenuItem key={stateName} value={stateName}>
-                  {stateName}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl fullWidth variant="outlined" margin="normal">
-            <InputLabel>City</InputLabel>
-            <Select
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
-              label="City"
-            >
-              {cities.map((cityName) => (
-                <MenuItem key={cityName} value={cityName}>
-                  {cityName}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          {!!country && (
+            <FormControl fullWidth variant="outlined" margin="normal">
+              <InputLabel>State</InputLabel>
+              <Select value={state} onChange={handleStateChange} label="State">
+                {states.map((state) => (
+                  <MenuItem key={state.name} value={state.name}>
+                    {state.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          )}
+          {!!country && !!state && (
+            <FormControl fullWidth variant="outlined" margin="normal">
+              <InputLabel>City</InputLabel>
+              <Select
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                label="City"
+              >
+                {cities.map((city) => (
+                  <MenuItem key={city.name} value={city.name}>
+                    {city.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          )}
           <Button
             className="bg-blue-600 mt-2"
             variant="contained"
