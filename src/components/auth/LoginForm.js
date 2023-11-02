@@ -12,6 +12,7 @@ function LoginForm() {
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState(false);
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
   const handleEmailChange = (e) => {
     const inputEmail = e.target.value;
     setEmail(inputEmail);
@@ -26,16 +27,15 @@ function LoginForm() {
 
   const handleLogin = async () => {
     // Check if email is valid before proceeding
+    if (!email || !password) {
+      return;
+    }
     if (emailError) {
       // Handle email validation error
       return;
     }
-
-    // Implement your authentication logic here
-    console.log("Email: ", email);
-    console.log("Password: ", password);
-
     try {
+      setLoading(true);
       const res = await signIn("credentials", {
         email,
         password,
@@ -44,16 +44,23 @@ function LoginForm() {
 
       if (res.error) {
         console.log("Invalid Credentials");
+        setLoading(false);
         return;
       }
+      setLoading(false);
       router.replace("users");
     } catch (error) {
       console.log("🚀 ~ file: LoginForm.js:39 ~ handleLogin ~ error:", error);
+      setLoading(false);
     }
   };
 
   return (
-    <Container component="main" maxWidth="xs">
+    <Container
+      className="h-screen flex flex-col justify-center items-center"
+      component="main"
+      maxWidth="xs"
+    >
       <div className="flex flex-col items-center mb-2">
         <LockOutlinedIcon style={{ fontSize: "50px" }} />
         <Typography variant="h5">Login</Typography>
@@ -87,7 +94,7 @@ function LoginForm() {
             fullWidth
             onClick={handleLogin}
           >
-            Login
+            {loading ? "Loging in..." : "Login"}
           </Button>
         </form>
       </div>

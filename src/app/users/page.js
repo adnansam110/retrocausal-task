@@ -19,6 +19,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import axios from "axios";
 import EditProfileModal from "@/components/users/EditProfileModal";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const headCells = [
   { id: "username", label: "Username" },
@@ -28,49 +30,58 @@ const headCells = [
   { id: "city", label: "City" },
 ];
 
+const limit = 2;
+
 function UserList() {
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [page, setPage] = useState(1);
   const [order, setOrder] = useState("asc");
   const [orderBy, setOrderBy] = useState("username");
-  const [filter, setFilter] = useState("");
   const [usersList, setUsersList] = useState([]);
   const [open, setOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState({});
+  const [count, setCount] = useState(0);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     getUsers();
+    // getC
   }, []);
 
   const getUsers = async () => {
-    // const users = fetch
     //call api here
-    const res = await axios.get("api/users");
-    setUsersList(res.data.data);
+    try {
+      const cachePage = localStorage.getItem("page") || page;
+      const cacheSort = localStorage.getItem("sortBy") || "username";
+      const cacheSearch = localStorage.getItem("search") || "";
+      setPage(cachePage);
+      setSearch(cacheSearch);
+      const res = await axios.get(
+        `api/users?page=${cachePage}&limit=${limit}&search=${cacheSearch}&sortBy=${cacheSort}`
+      );
+      setUsersList(res.data.data.users);
+      setCount(res.data.data.count);
+    } catch (err) {
+      console.log("🚀 ~ file: page.js:89 ~ getUsers ~ err:", err);
+      toast.error(err);
+    }
   };
-  const handleRequestSort = (property) => {
-    const isAsc = orderBy === property && order === "asc";
-    setOrder(isAsc ? "desc" : "asc");
-    setOrderBy(property);
-  };
-
-  const filteredUsers = usersList.filter((user) => {
-    return (
-      user.username.toLowerCase().includes(filter.toLowerCase()) ||
-      user.email.toLowerCase().includes(filter.toLowerCase()) ||
-      user.country.toLowerCase().includes(filter.toLowerCase()) ||
-      user.state.toLowerCase().includes(filter.toLowerCase()) ||
-      user.city.toLowerCase().includes(filter.toLowerCase())
+  const handleRequestSort = async (property) => {
+    const res = await axios.get(
+      `api/users?page=${page}&limit=${limit}&${search}&sortBy=${property}`
     );
-  });
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
+    setUsersList(res.data.data.users);
+    setCount(res.data.data.count);
+    localStorage.setItem("sortBy", property);
   };
 
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
+  const handleChangePage = async (event, newPage) => {
+    const res = await axios.get(
+      `api/users?page=${newPage + 1}&limit=${limit}&${search}`
+    );
+    setUsersList(res.data.data.users);
+    setCount(res.data.data.count);
+    setPage(newPage + 1);
+    localStorage.setItem("page", newPage + 1);
   };
 
   const deleteUser = async (userId) => {
@@ -78,8 +89,10 @@ function UserList() {
       await axios.delete(`api/users/${userId}`);
       const updatedUsers = usersList.filter((user) => user._id !== userId);
       setUsersList(updatedUsers);
+      toast.success("User Deleted");
     } catch (err) {
       console.log("🚀 ~ file: page.js:138 ~ deleteUser ~ err:", err);
+      toast.error(err);
     }
   };
 
@@ -108,48 +121,62 @@ function UserList() {
       setUsersList(updatedUsersList);
       setSelectedUser({});
       handleClose();
+      toast.success("User Updated");
     } catch (error) {}
   };
 
+  const searchUsers = async (searchText) => {
+    setSearch(searchText);
+    const res = await axios.get(
+      `api/users?page=${page}&limit=${limit}&search=${searchText}`
+    );
+    setUsersList(res.data.data.users);
+    setCount(res.data.data.count);
+    localStorage.setItem("search", searchText);
+  };
+
+  const handleLogout = () => {
+    localStorage.clear();
+    signOut();
+  };
+
   return (
-    <div className="p-10">
-      <div className="flex justify-between items-center">
-        <TextField
-          className="mb-3"
-          label="Filter Users"
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-        />
-        <button onClick={() => signOut()} className="cursor-pointer">
-          <span>Logout</span>
-        </button>
-      </div>
-      <Paper>
-        <TableContainer>
-          <Table>
-            <TableHead>
-              <TableRow>
-                {headCells.map((headCell) => (
-                  <TableCell
-                    key={headCell.id}
-                    sortDirection={orderBy === headCell.id ? order : false}
-                  >
-                    <TableSortLabel
-                      active={orderBy === headCell.id}
-                      direction={orderBy === headCell.id ? order : "asc"}
-                      onClick={() => handleRequestSort(headCell.id)}
+    <>
+      <ToastContainer />
+      <div className="p-10">
+        <div className="flex justify-between items-center">
+          <TextField
+            className="mb-3"
+            label="Filter Users"
+            value={search}
+            onChange={(e) => searchUsers(e.target.value)}
+          />
+          <button onClick={() => handleLogout()} className="cursor-pointer">
+            <span>Logout</span>
+          </button>
+        </div>
+        <Paper>
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  {headCells.map((headCell) => (
+                    <TableCell
+                      key={headCell.id}
+                      sortDirection={orderBy === headCell.id ? order : false}
                     >
-                      {headCell.label}
-                    </TableSortLabel>
-                  </TableCell>
-                ))}
-                <TableCell>Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredUsers
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((user) => (
+                      <TableSortLabel
+                        onClick={() => handleRequestSort(headCell.id)}
+                      >
+                        {headCell.label}
+                      </TableSortLabel>
+                    </TableCell>
+                  ))}
+                  <TableCell>Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {usersList.map((user) => (
                   <TableRow key={user._id}>
                     <TableCell>{user.username}</TableCell>
                     <TableCell>{user.email}</TableCell>
@@ -168,29 +195,29 @@ function UserList() {
                     </TableCell>
                   </TableRow>
                 ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component="div"
-          count={filteredUsers.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-      </Paper>
-      {open && (
-        <EditProfileModal
-          open={open}
-          handleClose={handleClose}
-          selectedUser={selectedUser}
-          setSelectedUser={setSelectedUser}
-          updateUser={updateUser}
-        />
-      )}
-    </div>
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <TablePagination
+            rowsPerPageOptions={[]}
+            rowsPerPage={limit}
+            component="div"
+            count={count}
+            page={page - 1}
+            onPageChange={handleChangePage}
+          />
+        </Paper>
+        {open && (
+          <EditProfileModal
+            open={open}
+            handleClose={handleClose}
+            selectedUser={selectedUser}
+            setSelectedUser={setSelectedUser}
+            updateUser={updateUser}
+          />
+        )}
+      </div>
+    </>
   );
 }
 

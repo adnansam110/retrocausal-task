@@ -26,6 +26,8 @@ export default function SignupForm() {
   const [citiesList, setCitiesList] = useState([]);
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
+  const [emailError, setEmailError] = useState(false);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleCountryChange = (event) => {
@@ -52,7 +54,12 @@ export default function SignupForm() {
   const handleSignUp = async (e) => {
     e.preventDefault();
     // Implement your signup logic here
+    if (emailError) {
+      // Handle email validation error
+      return;
+    }
     try {
+      setLoading(true);
       await axios.post("api/signup", {
         username,
         password,
@@ -63,9 +70,11 @@ export default function SignupForm() {
       });
       const form = e.target;
       form.reset();
+      setLoading(false);
       router.push("/");
     } catch (err) {
       console.log("🚀 ~ file: page.js:60 ~ handleSignUp ~ err:", err);
+      setLoading(false);
     }
   };
 
@@ -100,12 +109,35 @@ export default function SignupForm() {
     }
   };
 
+  const handleEmailChange = (value) => {
+    const inputEmail = value;
+    setEmail(value);
+    const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    setEmailError(!emailPattern.test(inputEmail));
+  };
+
   return (
-    <Container component="main" maxWidth="xs">
+    <Container
+      className="h-screen flex flex-col justify-center items-center"
+      component="main"
+      maxWidth="xs"
+    >
       <div className="flex flex-col items-center mb-2">
         <LockOutlinedIcon style={{ fontSize: "50px" }} />
         <h2>Sign Up</h2>
         <form onSubmit={handleSignUp}>
+          <TextField
+            label="Email"
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            type="email"
+            value={email}
+            error={emailError}
+            helperText={emailError ? "Invalid email address" : ""}
+            onChange={(e) => handleEmailChange(e.target.value)}
+          />
           <TextField
             label="Username"
             variant="outlined"
@@ -125,16 +157,7 @@ export default function SignupForm() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <TextField
-            label="Email"
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+
           <FormControl fullWidth variant="outlined" margin="normal">
             <InputLabel>Country</InputLabel>
             <Select
@@ -184,11 +207,11 @@ export default function SignupForm() {
             fullWidth
             type="submit"
           >
-            Sign Up
+            {loading ? "Signing Up..." : "Sign Up"}
           </Button>
         </form>
       </div>
-      <span>
+      <span className="text-start">
         Already have an account?{" "}
         <Link className="text-blue-600 underline" href={"/"}>
           Login
