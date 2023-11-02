@@ -56,13 +56,9 @@ function LoginForm() {
   };
 
   return (
-    <Container
-      className="h-screen flex flex-col justify-center items-center"
-      component="main"
-      maxWidth="xs"
-    >
+    <div className="h-screen flex flex-col justify-center items-center">
       <div className="flex flex-col items-center mb-2">
-        <LockOutlinedIcon style={{ fontSize: "50px" }} />
+        <LockOutlinedIcon style={{ fontSize: "30px" }} />
         <Typography variant="h5">Login</Typography>
         <form>
           <TextField
@@ -86,9 +82,10 @@ function LoginForm() {
             type="password"
             value={password}
             onChange={handlePasswordChange}
+            className="mb-2"
           />
           <Button
-            className="bg-blue-600 mt-2"
+            className="bg-blue-600"
             variant="contained"
             color="primary"
             fullWidth
@@ -104,7 +101,7 @@ function LoginForm() {
           Register Now
         </Link>
       </span>
-    </Container>
+    </div>
   );
 }
 

@@ -123,7 +123,7 @@ export default function SignupForm() {
       maxWidth="xs"
     >
       <div className="flex flex-col items-center mb-2">
-        <LockOutlinedIcon style={{ fontSize: "50px" }} />
+        <LockOutlinedIcon style={{ fontSize: "30px" }} />
         <h2>Sign Up</h2>
         <form onSubmit={handleSignUp}>
           <TextField
