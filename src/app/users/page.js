@@ -66,9 +66,9 @@ function UserList() {
     }
   };
   const handleRequestSort = async (property) => {
-    const res = await axios.get(
-      `api/users?page=${page}&limit=${limit}&${search}&sortBy=${property}`
-    );
+    const res = await axios.get(`api/users?sortBy=${property}`);
+    setPage(1);
+    setSearch("");
     setUsersList(res.data.data.users);
     setCount(res.data.data.count);
     localStorage.setItem("sortBy", property);
@@ -130,6 +130,7 @@ function UserList() {
     const res = await axios.get(`api/users?search=${searchText}`);
     setUsersList(res.data.data.users);
     setCount(res.data.data.count);
+    setPage(1);
     localStorage.setItem("search", searchText);
   };
 
