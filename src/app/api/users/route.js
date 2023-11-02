@@ -4,8 +4,8 @@ import { getUsers } from "@/services/usersService";
 export async function GET(req) {
   try {
     const url = new URL(req.url);
-    const page = url.searchParams.get("page") || 0;
-    const limit = url.searchParams.get("limit") || 5;
+    const page = url.searchParams.get("page") || 1;
+    const limit = url.searchParams.get("limit") || 2;
     const search = url.searchParams.get("search") || "";
     const sortBy = url.searchParams.get("sortBy") || "username";
     await connectMongoDb();

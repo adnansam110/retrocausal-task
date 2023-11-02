@@ -127,9 +127,7 @@ function UserList() {
 
   const searchUsers = async (searchText) => {
     setSearch(searchText);
-    const res = await axios.get(
-      `api/users?page=${page}&limit=${limit}&search=${searchText}`
-    );
+    const res = await axios.get(`api/users?search=${searchText}`);
     setUsersList(res.data.data.users);
     setCount(res.data.data.count);
     localStorage.setItem("search", searchText);
