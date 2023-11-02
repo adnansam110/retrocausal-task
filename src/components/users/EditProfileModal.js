@@ -22,9 +22,6 @@ function EditProfileModal({
 
   return (
     <div>
-      {/* <Button variant="outlined" color="primary" onClick={handleOpen}>
-        Edit Profile
-      </Button> */}
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Edit Profile</DialogTitle>
         <DialogContent>
