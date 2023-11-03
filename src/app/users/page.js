@@ -48,7 +48,7 @@ function UserList() {
   }, []);
 
   const getUsers = async () => {
-    //call api here
+    // Get the list of registered users
     try {
       const cachePage = localStorage.getItem("page") || page;
       const cacheSort = localStorage.getItem("sortBy") || "username";
@@ -66,6 +66,7 @@ function UserList() {
     }
   };
   const handleRequestSort = async (property) => {
+    // This method allows the to sort the list of users based on different columns
     const res = await axios.get(`api/users?sortBy=${property}`);
     setPage(1);
     setSearch("");
@@ -94,10 +95,6 @@ function UserList() {
       console.log("🚀 ~ file: page.js:138 ~ deleteUser ~ err:", err);
       toast.error(err);
     }
-  };
-
-  const handleOpen = () => {
-    setOpen(true);
   };
 
   const handleClose = () => {
