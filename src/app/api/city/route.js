@@ -5,7 +5,6 @@ export async function GET(req) {
   try {
     await connectMongoDb();
     const cities = await getCities();
-    console.log("🚀 ~ file: route.js:8 ~ GET ~ countries:", cities);
 
     return NextResponse.json({
       data: cities,
