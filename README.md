@@ -2,7 +2,18 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Getting Started
 
-First, run the development server:
+First install the dependencies using:
+
+```bash
+npm install
+# or
+yarn install
+```
+
+## Run Locally
+To run locally create a `.env` file and copy paste content from `.env.example`.
+
+Then, run the development server:
 
 ```bash
 npm run dev
@@ -18,19 +29,17 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## App Flow:
+1. Login with valid credentials or Sign up if not already registered
+2. Once logged in, you will be redirected to the `/users` page.
+3. Users page will list all the users registered with functionality to edit, delete filter sort and paginate.
 
-## Learn More
+## Login Page
+![image](https://github.com/adnansam110/retrocausal-task/assets/51002433/662873ec-8df6-4a80-8a33-81aae0afe6e8)
 
-To learn more about Next.js, take a look at the following resources:
+## Signup Page
+![image](https://github.com/adnansam110/retrocausal-task/assets/51002433/bbd5451f-1435-471e-8387-ccd7e7acc9cb)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Users List Page
+![image](https://github.com/adnansam110/retrocausal-task/assets/51002433/5e9c357e-dcab-4b68-a1c9-781668beaa05)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
