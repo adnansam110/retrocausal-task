@@ -102,7 +102,7 @@ function LoginForm() {
         </form>
       </div>
       <span>
-        Don't have an account?{" "}
+        {"Dont have an account?"}{" "}
         <Link className="text-blue-600 underline" href={"/signup"}>
           Register Now
         </Link>
