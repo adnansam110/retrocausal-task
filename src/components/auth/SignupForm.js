@@ -13,8 +13,7 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { emailValidationPattern } from "@/constants/validators";
 
 export default function SignupForm() {
   const [username, setUsername] = useState("");
@@ -72,12 +71,10 @@ export default function SignupForm() {
       });
       const form = e.target;
       form.reset();
-      toast.success("Sign Up Successful");
       setLoading(false);
       router.push("/");
     } catch (err) {
       console.log("🚀 ~ file: page.js:60 ~ handleSignUp ~ err:", err);
-      toast.error("Sign Up Failed", err);
       setLoading(false);
     }
   };
@@ -116,7 +113,7 @@ export default function SignupForm() {
   const handleEmailChange = (value) => {
     const inputEmail = value;
     setEmail(value);
-    const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    const emailPattern = emailValidationPattern;
     setEmailError(!emailPattern.test(inputEmail));
   };
 
@@ -126,7 +123,6 @@ export default function SignupForm() {
       component="main"
       maxWidth="xs"
     >
-      <ToastContainer />
       <div className="flex flex-col items-center mb-2">
         <LockOutlinedIcon style={{ fontSize: "30px" }} />
         <h2>Sign Up</h2>

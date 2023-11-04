@@ -6,8 +6,7 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { emailValidationPattern } from "@/constants/validators";
 
 function LoginForm() {
   const [email, setEmail] = useState("");
@@ -19,7 +18,7 @@ function LoginForm() {
     const inputEmail = e.target.value;
     setEmail(inputEmail);
     // Regular expression for basic email validation
-    const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    const emailPattern = emailValidationPattern;
     setEmailError(!emailPattern.test(inputEmail));
   };
 
@@ -46,23 +45,19 @@ function LoginForm() {
 
       if (res.error) {
         console.log("");
-        toast.error("Invalid Credentials");
         setLoading(false);
         return;
       }
       setLoading(false);
-      toast.success("Login Successful");
       router.replace("users");
     } catch (error) {
       console.log("🚀 ~ file: LoginForm.js:39 ~ handleLogin ~ error:", error);
-      toast.error(error);
       setLoading(false);
     }
   };
 
   return (
     <div className="h-screen flex flex-col justify-center items-center">
-      <ToastContainer />
       <div className="flex flex-col items-center mb-2">
         <LockOutlinedIcon style={{ fontSize: "30px" }} />
         <Typography variant="h5">Login</Typography>

@@ -3,6 +3,7 @@ import User from "@/models/user";
 import NextAuth from "next-auth/next";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
+import { emailValidationPattern } from "@/constants/validators";
 
 export const authOptions = {
   providers: [
@@ -20,6 +21,8 @@ export const authOptions = {
       async authorize(credentials) {
         const { email, password } = credentials;
         try {
+          const emailPattern = emailValidationPattern;
+          if (!emailPattern.test(email)) return null;
           await connectMongoDb();
           const user = await User.findOne({ email });
           if (!user) return null;

@@ -19,6 +19,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import axios from "axios";
 import EditProfileModal from "@/components/users/EditProfileModal";
+import HourglassBottomIcon from "@mui/icons-material/HourglassBottom";
+import LogoutIcon from "@mui/icons-material/Logout";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -41,10 +43,10 @@ function UserList() {
   const [selectedUser, setSelectedUser] = useState({});
   const [count, setCount] = useState(0);
   const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     getUsers();
-    // getC
   }, []);
 
   const getUsers = async () => {
@@ -63,6 +65,8 @@ function UserList() {
     } catch (err) {
       console.log("🚀 ~ file: page.js:89 ~ getUsers ~ err:", err);
       toast.error(err);
+    } finally {
+      setLoading(false);
     }
   };
   const handleRequestSort = async (property) => {
@@ -138,81 +142,90 @@ function UserList() {
 
   return (
     <>
-      <ToastContainer />
-      <div className="p-10">
-        <div className="flex justify-between items-center">
-          <TextField
-            className="mb-3"
-            label="Filter Users"
-            value={search}
-            onChange={(e) => searchUsers(e.target.value)}
-          />
-          <button onClick={() => handleLogout()} className="cursor-pointer">
-            <span>Logout</span>
-          </button>
+      {loading ? (
+        <div className="h-screen w-screen flex justify-center items-center">
+          <HourglassBottomIcon />
         </div>
-        <Paper>
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  {headCells.map((headCell) => (
-                    <TableCell
-                      key={headCell.id}
-                      sortDirection={orderBy === headCell.id ? order : false}
-                    >
-                      <TableSortLabel
-                        onClick={() => handleRequestSort(headCell.id)}
-                      >
-                        {headCell.label}
-                      </TableSortLabel>
-                    </TableCell>
-                  ))}
-                  <TableCell>Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {usersList.map((user) => (
-                  <TableRow key={user._id}>
-                    <TableCell>{user.username}</TableCell>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell>{user.country}</TableCell>
-                    <TableCell>{user.state}</TableCell>
-                    <TableCell>{user.city}</TableCell>
-                    <TableCell>
-                      <button onClick={() => openModal(user)}>
-                        <EditIcon className="text-gray-500" />
-                      </button>{" "}
-                      {/* Add your edit user logic here */}
-                      <button onClick={() => deleteUser(user._id)}>
-                        <DeleteIcon className="text-rose-700" />
-                      </button>{" "}
-                      {/* Add your delete user logic here */}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <TablePagination
-            rowsPerPageOptions={[]}
-            rowsPerPage={limit}
-            component="div"
-            count={count}
-            page={page - 1}
-            onPageChange={handleChangePage}
-          />
-        </Paper>
-        {open && (
-          <EditProfileModal
-            open={open}
-            handleClose={handleClose}
-            selectedUser={selectedUser}
-            setSelectedUser={setSelectedUser}
-            updateUser={updateUser}
-          />
-        )}
-      </div>
+      ) : (
+        <>
+          <ToastContainer />
+          <div className="p-10">
+            <div className="flex justify-between items-center mb-3">
+              <TextField
+                label="Filter Users"
+                value={search}
+                onChange={(e) => searchUsers(e.target.value)}
+              />
+              <button onClick={() => handleLogout()} className="cursor-pointer">
+                <LogoutIcon />
+              </button>
+            </div>
+            <Paper>
+              <TableContainer>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      {headCells.map((headCell) => (
+                        <TableCell
+                          key={headCell.id}
+                          sortDirection={
+                            orderBy === headCell.id ? order : false
+                          }
+                        >
+                          <TableSortLabel
+                            onClick={() => handleRequestSort(headCell.id)}
+                          >
+                            {headCell.label}
+                          </TableSortLabel>
+                        </TableCell>
+                      ))}
+                      <TableCell>Actions</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {usersList.map((user) => (
+                      <TableRow key={user._id}>
+                        <TableCell>{user.username}</TableCell>
+                        <TableCell>{user.email}</TableCell>
+                        <TableCell>{user.country}</TableCell>
+                        <TableCell>{user.state}</TableCell>
+                        <TableCell>{user.city}</TableCell>
+                        <TableCell>
+                          <button onClick={() => openModal(user)}>
+                            <EditIcon className="text-gray-500" />
+                          </button>{" "}
+                          {/* Add your edit user logic here */}
+                          <button onClick={() => deleteUser(user._id)}>
+                            <DeleteIcon className="text-rose-700" />
+                          </button>{" "}
+                          {/* Add your delete user logic here */}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <TablePagination
+                rowsPerPageOptions={[]}
+                rowsPerPage={limit}
+                component="div"
+                count={count}
+                page={page - 1}
+                onPageChange={handleChangePage}
+              />
+            </Paper>
+            {open && (
+              <EditProfileModal
+                open={open}
+                handleClose={handleClose}
+                selectedUser={selectedUser}
+                setSelectedUser={setSelectedUser}
+                updateUser={updateUser}
+              />
+            )}
+          </div>
+        </>
+      )}
     </>
   );
 }
