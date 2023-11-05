@@ -136,7 +136,7 @@ function UserList() {
       setCount(res.data.data.count);
       setPage(1);
       localStorage.setItem("search", searchText);
-    }, 1000);
+    }, 500);
   };
 
   const handleLogout = () => {
