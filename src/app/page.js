@@ -9,7 +9,6 @@ import { redirect } from "next/navigation";
 
 export default async function Home() {
   const session = await getServerSession(authOptions);
-  console.log("🚀 ~ file: page.js:12 ~ Home ~ session:", session);
 
   if (session) redirect("/users");
   return (
