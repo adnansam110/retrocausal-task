@@ -1,7 +1,7 @@
 // src/components/UserList.js
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Paper,
   Table,
@@ -44,6 +44,7 @@ function UserList() {
   const [count, setCount] = useState(0);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
+  const debounce = useRef(null);
 
   useEffect(() => {
     getUsers();
@@ -128,11 +129,14 @@ function UserList() {
 
   const searchUsers = async (searchText) => {
     setSearch(searchText);
-    const res = await axios.get(`api/users?search=${searchText}`);
-    setUsersList(res.data.data.users);
-    setCount(res.data.data.count);
-    setPage(1);
-    localStorage.setItem("search", searchText);
+    if (debounce.current) clearTimeout(debounce.current);
+    debounce.current = setTimeout(async () => {
+      const res = await axios.get(`api/users?search=${searchText}`);
+      setUsersList(res.data.data.users);
+      setCount(res.data.data.count);
+      setPage(1);
+      localStorage.setItem("search", searchText);
+    }, 1000);
   };
 
   const handleLogout = () => {
