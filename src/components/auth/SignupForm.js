@@ -14,6 +14,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { emailValidationPattern } from "@/constants/validators";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function SignupForm() {
   const [username, setUsername] = useState("");
@@ -75,6 +77,7 @@ export default function SignupForm() {
       router.push("/");
     } catch (err) {
       console.log("🚀 ~ file: page.js:60 ~ handleSignUp ~ err:", err);
+      toast.error("Registration Failed!");
       setLoading(false);
     }
   };
@@ -123,6 +126,7 @@ export default function SignupForm() {
       component="main"
       maxWidth="xs"
     >
+      <ToastContainer />
       <div className="flex flex-col items-center mb-2">
         <LockOutlinedIcon style={{ fontSize: "30px" }} />
         <h2>Sign Up</h2>

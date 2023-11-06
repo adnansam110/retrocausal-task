@@ -164,60 +164,67 @@ function UserList() {
                 <LogoutIcon />
               </button>
             </div>
-            <Paper>
-              <TableContainer>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      {headCells.map((headCell) => (
-                        <TableCell
-                          key={headCell.id}
-                          sortDirection={
-                            orderBy === headCell.id ? order : false
-                          }
-                        >
-                          <TableSortLabel
-                            onClick={() => handleRequestSort(headCell.id)}
+            {usersList.length ? (
+              <Paper>
+                <TableContainer>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        {headCells.map((headCell) => (
+                          <TableCell
+                            key={headCell.id}
+                            sortDirection={
+                              orderBy === headCell.id ? order : false
+                            }
                           >
-                            {headCell.label}
-                          </TableSortLabel>
-                        </TableCell>
-                      ))}
-                      <TableCell>Actions</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {usersList.map((user) => (
-                      <TableRow key={user._id}>
-                        <TableCell>{user.username}</TableCell>
-                        <TableCell>{user.email}</TableCell>
-                        <TableCell>{user.country}</TableCell>
-                        <TableCell>{user.state}</TableCell>
-                        <TableCell>{user.city}</TableCell>
-                        <TableCell>
-                          <button onClick={() => openModal(user)}>
-                            <EditIcon className="text-gray-500" />
-                          </button>{" "}
-                          {/* Add your edit user logic here */}
-                          <button onClick={() => deleteUser(user._id)}>
-                            <DeleteIcon className="text-rose-700" />
-                          </button>{" "}
-                          {/* Add your delete user logic here */}
-                        </TableCell>
+                            <TableSortLabel
+                              onClick={() => handleRequestSort(headCell.id)}
+                            >
+                              {headCell.label}
+                            </TableSortLabel>
+                          </TableCell>
+                        ))}
+                        <TableCell>Actions</TableCell>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              <TablePagination
-                rowsPerPageOptions={[]}
-                rowsPerPage={limit}
-                component="div"
-                count={count}
-                page={page - 1}
-                onPageChange={handleChangePage}
-              />
-            </Paper>
+                    </TableHead>
+                    <TableBody>
+                      {usersList.map((user) => (
+                        <TableRow key={user._id}>
+                          <TableCell>{user.username}</TableCell>
+                          <TableCell>{user.email}</TableCell>
+                          <TableCell>{user.country}</TableCell>
+                          <TableCell>{user.state}</TableCell>
+                          <TableCell>{user.city}</TableCell>
+                          <TableCell>
+                            <button onClick={() => openModal(user)}>
+                              <EditIcon className="text-gray-500" />
+                            </button>{" "}
+                            {/* Add your edit user logic here */}
+                            <button onClick={() => deleteUser(user._id)}>
+                              <DeleteIcon className="text-rose-700" />
+                            </button>{" "}
+                            {/* Add your delete user logic here */}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+                <TablePagination
+                  rowsPerPageOptions={[]}
+                  rowsPerPage={limit}
+                  component="div"
+                  count={count}
+                  page={page - 1}
+                  onPageChange={handleChangePage}
+                />
+              </Paper>
+            ) : (
+              <div className="flex w-full justify-center items-center mt-10 text-gray-400">
+                <span>No users to show!</span>
+              </div>
+            )}
+
             {open && (
               <EditProfileModal
                 open={open}

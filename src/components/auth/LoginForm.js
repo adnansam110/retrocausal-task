@@ -7,6 +7,8 @@ import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { emailValidationPattern } from "@/constants/validators";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function LoginForm() {
   const [email, setEmail] = useState("");
@@ -46,18 +48,21 @@ function LoginForm() {
       if (res.error) {
         console.log("");
         setLoading(false);
+        toast.error("Invalid Email or Password!");
         return;
       }
       setLoading(false);
       router.replace("users");
     } catch (error) {
       console.log("🚀 ~ file: LoginForm.js:39 ~ handleLogin ~ error:", error);
+      toast.error("Invalid Email or Password!");
       setLoading(false);
     }
   };
 
   return (
     <div className="h-screen flex flex-col justify-center items-center">
+      <ToastContainer />
       <div className="flex flex-col items-center mb-2">
         <LockOutlinedIcon style={{ fontSize: "30px" }} />
         <Typography variant="h5">Login</Typography>
